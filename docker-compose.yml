@@ -1,0 +1,74 @@
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: wikipedia-chatbot-rabbitmq
+    ports:
+      - "5672:5672"      # AMQP port
+      - "15672:15672"    # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - wikipedia-chatbot-network
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wikipedia-chatbot-api
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=${RABBITMQ_USER:-guest}
+      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD:-guest}
+      - DEBUG=${DEBUG:-False}
+      - API_VERSION=${API_VERSION:-v1}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - wikipedia-chatbot-network
+    volumes:
+      - ./app:/app/app
+      - ./logs:/app/logs
+    restart: unless-stopped
+
+  event-consumer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wikipedia-chatbot-consumer
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=${RABBITMQ_USER:-guest}
+      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD:-guest}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - wikipedia-chatbot-network
+    volumes:
+      - ./app:/app/app
+      - ./logs:/app/logs
+    command: python -m app.consumer
+    restart: unless-stopped
+
+networks:
+  wikipedia-chatbot-network:
+    driver: bridge
+
+volumes:
+  rabbitmq-data:

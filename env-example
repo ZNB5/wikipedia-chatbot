@@ -1,0 +1,18 @@
+# API Configuration
+API_VERSION=v1
+API_TITLE=Wikipedia Chatbot API
+DEBUG=False
+
+# OpenAI Configuration
+OPENAI_API_KEY=your_openai_api_key_here
+
+# RabbitMQ Configuration
+RABBITMQ_HOST=rabbitmq
+RABBITMQ_PORT=5672
+RABBITMQ_USER=guest
+RABBITMQ_PASSWORD=guest
+RABBITMQ_QUEUE_NAME=wikipedia_chatbot_queue
+
+# Application Configuration
+HOST=0.0.0.0
+PORT=8000
