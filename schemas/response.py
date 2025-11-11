@@ -30,15 +30,25 @@ class WikipediaSource(BaseModel):
 class ChatResponse(BaseModel):
     """Schema for chat response"""
     message: str = Field(..., description="Explanation of the topic with Wikipedia URLs included")
-    session_id: Optional[str] = Field(None, description="Session ID")
     request_id: str = Field(..., description="Unique request ID")
 
     class Config:
         json_schema_extra = {
             "example": {
                 "message": "La Inteligencia Artificial es... Fuente: https://en.wikipedia.org/wiki/Artificial_intelligence",
-                "session_id": "session-123",
                 "request_id": "req-12345"
+            }
+        }
+
+
+class ChatWikipediaResponse(BaseModel):
+    """Schema for chat Wikipedia response"""
+    message: str = Field(..., description="Answer with Wikipedia source")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "message": "La Inteligencia Artificial es la simulación de procesos de inteligencia humana por parte de máquinas. Fuente: https://es.wikipedia.org/wiki/Inteligencia_artificial"
             }
         }
 

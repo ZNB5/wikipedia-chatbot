@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: wikipedia-chatbot-service
+  namespace: default
+  labels:
+    app: wikipedia-chatbot
+spec:
+  type: ClusterIP
+  selector:
+    app: wikipedia-chatbot
+  ports:
+  - name: http
+    port: 9001
+    targetPort: http
+    protocol: TCP
