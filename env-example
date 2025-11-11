@@ -5,7 +5,6 @@ DEBUG=False
 
 # OpenAI Configuration
 OPENAI_API_KEY=your_openai_api_key_here
-OPENAI_MODEL=gpt-3.5-turbo
 
 # RabbitMQ Configuration
 RABBITMQ_HOST=rabbitmq
