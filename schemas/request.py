@@ -1,12 +1,10 @@
 from pydantic import BaseModel, Field, validator
-from typing import Optional
 from datetime import datetime
 
 
 class ChatRequest(BaseModel):
     """Schema for chat query requests"""
     question: str = Field(..., min_length=1, max_length=500, description="Question about a topic (e.g., 'What is Python?')")
-    session_id: Optional[str] = Field(None, description="Session ID for tracking")
 
     @validator('question')
     def validate_question(cls, v):
@@ -17,8 +15,25 @@ class ChatRequest(BaseModel):
     class Config:
         json_schema_extra = {
             "example": {
-                "question": "¿Qué es la Inteligencia Artificial?",
-                "session_id": "session-123"
+                "question": "¿Qué es la Inteligencia Artificial?"
+            }
+        }
+
+
+class ChatWikipediaRequest(BaseModel):
+    """Schema for chat Wikipedia requests"""
+    message: str = Field(..., min_length=1, max_length=500, description="Question to ask about Wikipedia")
+
+    @validator('message')
+    def validate_message(cls, v):
+        if not v.strip():
+            raise ValueError('Message cannot be empty or whitespace only')
+        return v.strip()
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "message": "¿Qué es la Inteligencia Artificial?"
             }
         }
 
